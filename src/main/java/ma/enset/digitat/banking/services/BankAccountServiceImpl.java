@@ -2,11 +2,11 @@ package ma.enset.digitat.banking.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.enset.digitat.banking.entities.BankAccount;
-import ma.enset.digitat.banking.entities.CurrentAccount;
-import ma.enset.digitat.banking.entities.Customer;
-import ma.enset.digitat.banking.entities.SavingAccount;
+import ma.enset.digitat.banking.entities.*;
 import ma.enset.digitat.banking.enums.AccountStatus;
+import ma.enset.digitat.banking.enums.OperationType;
+import ma.enset.digitat.banking.exceptions.BalanceNotSufficientException;
+import ma.enset.digitat.banking.exceptions.BankAcountNotFoundException;
 import ma.enset.digitat.banking.exceptions.CustomerNotFoundException;
 import ma.enset.digitat.banking.repositories.BankAccountRepository;
 import ma.enset.digitat.banking.repositories.CustomerRepository;
@@ -73,29 +73,51 @@ public class BankAccountServiceImpl implements BankAccountService {
         return savedSavingAccount;
     }
 
-
     @Override
     public List<Customer> listCustomers() {
-        return List.of();
+        return customerRepository.findAll();
     }
 
     @Override
-    public BankAccount getBankAccount(String accountId) {
-        return null;
+    public BankAccount getBankAccount(String accountId) throws CustomerNotFoundException, BankAcountNotFoundException {
+        BankAccount bankAccount = bankAccountRepository.findById(accountId).orElseThrow(() -> new BankAcountNotFoundException("Bank account not found"));
+        return bankAccount;
     }
 
     @Override
-    public void debit(String accountId, double amount, String description) {
-
+    public void debit(String accountId, double amount, String description) throws CustomerNotFoundException, BankAcountNotFoundException, BalanceNotSufficientException {
+        BankAccount bankAccount = getBankAccount(accountId);
+        if(bankAccount.getBalance() < amount){
+            throw new BalanceNotSufficientException("Balance not sufficient");
+        }
+        Operation operation = new Operation();
+        operation.setType(OperationType.DEBIT);
+        operation.setAmount(amount);
+        operation.setOperationDate(new Date());
+        operation.setDescription(description);
+        operation.setBankAccount(bankAccount);
+        operationRepository.save(operation);
+        bankAccount.setBalance(bankAccount.getBalance() - amount);
+        bankAccountRepository.save(bankAccount);
     }
 
     @Override
-    public void credit(String accountId, double amount, String description) {
-
+    public void credit(String accountId, double amount, String description) throws CustomerNotFoundException, BankAcountNotFoundException {
+        BankAccount bankAccount = getBankAccount(accountId);
+        Operation operation = new Operation();
+        operation.setType(OperationType.CREDIT);
+        operation.setAmount(amount);
+        operation.setOperationDate(new Date());
+        operation.setDescription(description);
+        operation.setBankAccount(bankAccount);
+        operationRepository.save(operation);
+        bankAccount.setBalance(bankAccount.getBalance() + amount);
+        bankAccountRepository.save(bankAccount);
     }
 
     @Override
-    public void transfer(String accountIdSource, String accountIdDestination, double amount) {
-
+    public void transfer(String accountIdSource, String accountIdDestination, double amount) throws CustomerNotFoundException, BalanceNotSufficientException, BankAcountNotFoundException {
+        debit(accountIdSource, amount, "Transfer to " + accountIdDestination);
+        credit(accountIdDestination, amount, "Transfer from " + accountIdSource);
     }
 }
