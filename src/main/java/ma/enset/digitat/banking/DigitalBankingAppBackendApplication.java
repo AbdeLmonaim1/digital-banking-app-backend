@@ -3,15 +3,20 @@ package ma.enset.digitat.banking;
 import ma.enset.digitat.banking.entities.*;
 import ma.enset.digitat.banking.enums.AccountStatus;
 import ma.enset.digitat.banking.enums.OperationType;
+import ma.enset.digitat.banking.exceptions.BalanceNotSufficientException;
+import ma.enset.digitat.banking.exceptions.BankAcountNotFoundException;
+import ma.enset.digitat.banking.exceptions.CustomerNotFoundException;
 import ma.enset.digitat.banking.repositories.BankAccountRepository;
 import ma.enset.digitat.banking.repositories.CustomerRepository;
 import ma.enset.digitat.banking.repositories.OperationRepository;
+import ma.enset.digitat.banking.services.BankAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @SpringBootApplication
@@ -95,6 +100,45 @@ public class DigitalBankingAppBackendApplication {
                 System.out.println("Operation Amount: " + op.getAmount());
                 System.out.println("Operation Date: " + op.getOperationDate());
                 System.out.println("Operation Description: " + op.getDescription());
+            });
+        };
+    }
+    //Test the service layer
+    @Bean
+    CommandLineRunner commandLineRunner(BankAccountService bankAccountService){
+        return args -> {
+            Customer cus1 = Customer.builder()
+                    .name("Tchicko")
+                    .email("tchicko@gmail.com")
+                    .build();
+            bankAccountService.saveCustomer(cus1);
+            Customer cus2 = Customer.builder()
+                    .name("Ahmed")
+                    .email("ahmed@gmail.com")
+                    .build();
+            bankAccountService.saveCustomer(cus2);
+            Customer cus3 = Customer.builder()
+                    .name("Ismail")
+                    .email("ismail@gmail.com")
+                    .build();
+            bankAccountService.saveCustomer(cus3);
+            System.out.println("******************List of Customers*********************");
+            bankAccountService.listCustomers().forEach(cust ->{
+                try {
+                    bankAccountService.saveCurrentBankAccount(Math.random()*12000,9000.00,cust.getId());
+                    bankAccountService.saveSavingBankAccount(Math.random()*12000,5.5,cust.getId());
+                    List<BankAccount> bankAccounts = bankAccountService.listBankAccounts();
+                    for (BankAccount bankAccount : bankAccounts) {
+                        for (int i = 0; i < 10; i++) {
+                            bankAccountService.credit(bankAccount.getId(), 10000+Math.random()*12000, "Credit Operation");
+                            bankAccountService.debit(bankAccount.getId(), 1000+Math.random()*9000, "Debit Operation");
+                        }
+                    }
+                } catch (CustomerNotFoundException e) {
+                    e.printStackTrace();
+                } catch (BankAcountNotFoundException | BalanceNotSufficientException e) {
+                    throw new RuntimeException(e);
+                }
             });
         };
     }

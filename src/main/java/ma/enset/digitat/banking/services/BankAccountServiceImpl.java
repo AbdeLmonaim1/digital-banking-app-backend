@@ -11,8 +11,6 @@ import ma.enset.digitat.banking.exceptions.CustomerNotFoundException;
 import ma.enset.digitat.banking.repositories.BankAccountRepository;
 import ma.enset.digitat.banking.repositories.CustomerRepository;
 import ma.enset.digitat.banking.repositories.OperationRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +50,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         currentBankAccount.setCreatedAt(new Date());
         currentBankAccount.setStatus(AccountStatus.CREATED);
         currentBankAccount.setOverDraft(overDraft);
+        currentBankAccount.setCustomer(customer);
         CurrentAccount savedCurrentAccount = bankAccountRepository.save(currentBankAccount);
         return savedCurrentAccount;
     }
@@ -69,6 +68,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         savingBankAccount.setCreatedAt(new Date());
         savingBankAccount.setStatus(AccountStatus.CREATED);
         savingBankAccount.setInterestRate(interestRate);
+        savingBankAccount.setCustomer(customer);
         SavingAccount savedSavingAccount = bankAccountRepository.save(savingBankAccount);
         return savedSavingAccount;
     }
@@ -119,5 +119,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     public void transfer(String accountIdSource, String accountIdDestination, double amount) throws CustomerNotFoundException, BalanceNotSufficientException, BankAcountNotFoundException {
         debit(accountIdSource, amount, "Transfer to " + accountIdDestination);
         credit(accountIdDestination, amount, "Transfer from " + accountIdSource);
+    }
+    @Override
+    public List<BankAccount> listBankAccounts() {
+        return bankAccountRepository.findAll();
     }
 }
