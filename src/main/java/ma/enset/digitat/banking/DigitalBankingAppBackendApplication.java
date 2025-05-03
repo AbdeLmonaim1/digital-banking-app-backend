@@ -1,5 +1,6 @@
 package ma.enset.digitat.banking;
 
+import ma.enset.digitat.banking.dtos.CustomerDTO;
 import ma.enset.digitat.banking.entities.*;
 import ma.enset.digitat.banking.enums.AccountStatus;
 import ma.enset.digitat.banking.enums.OperationType;
@@ -104,20 +105,20 @@ public class DigitalBankingAppBackendApplication {
         };
     }
     //Test the service layer
-    @Bean
+//    @Bean
     CommandLineRunner commandLineRunner(BankAccountService bankAccountService){
         return args -> {
-            Customer cus1 = Customer.builder()
+            CustomerDTO cus1 = CustomerDTO.builder()
                     .name("Tchicko")
                     .email("tchicko@gmail.com")
                     .build();
             bankAccountService.saveCustomer(cus1);
-            Customer cus2 = Customer.builder()
+            CustomerDTO cus2 = CustomerDTO.builder()
                     .name("Ahmed")
                     .email("ahmed@gmail.com")
                     .build();
             bankAccountService.saveCustomer(cus2);
-            Customer cus3 = Customer.builder()
+            CustomerDTO cus3 = CustomerDTO.builder()
                     .name("Ismail")
                     .email("ismail@gmail.com")
                     .build();
