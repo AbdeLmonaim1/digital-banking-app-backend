@@ -1,9 +1,6 @@
 package ma.enset.digitat.banking.services;
 
-import ma.enset.digitat.banking.dtos.BankAccountDTO;
-import ma.enset.digitat.banking.dtos.CurrentBankAccountDTO;
-import ma.enset.digitat.banking.dtos.CustomerDTO;
-import ma.enset.digitat.banking.dtos.SavingBankAccountDTO;
+import ma.enset.digitat.banking.dtos.*;
 import ma.enset.digitat.banking.entities.BankAccount;
 import ma.enset.digitat.banking.entities.CurrentAccount;
 import ma.enset.digitat.banking.entities.Customer;
@@ -11,6 +8,7 @@ import ma.enset.digitat.banking.entities.SavingAccount;
 import ma.enset.digitat.banking.exceptions.BalanceNotSufficientException;
 import ma.enset.digitat.banking.exceptions.BankAcountNotFoundException;
 import ma.enset.digitat.banking.exceptions.CustomerNotFoundException;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -31,4 +29,8 @@ public interface BankAccountService {
     void credit(String accountId, double amount, String description) throws CustomerNotFoundException, BankAcountNotFoundException;
     void transfer(String accountIdSource, String accountIdDestination, double amount) throws CustomerNotFoundException, BalanceNotSufficientException, BankAcountNotFoundException;
     List<BankAccountDTO> listBankAccounts();
+
+    List<OperationDTO> accountHistory(String accountId) throws BankAcountNotFoundException;
+
+    AccountHistoryDTO getAccountHistory(String accountID, int page, int size) throws BankAcountNotFoundException;
 }

@@ -2,10 +2,7 @@ package ma.enset.digitat.banking.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.enset.digitat.banking.dtos.BankAccountDTO;
-import ma.enset.digitat.banking.dtos.CurrentBankAccountDTO;
-import ma.enset.digitat.banking.dtos.CustomerDTO;
-import ma.enset.digitat.banking.dtos.SavingBankAccountDTO;
+import ma.enset.digitat.banking.dtos.*;
 import ma.enset.digitat.banking.entities.*;
 import ma.enset.digitat.banking.enums.AccountStatus;
 import ma.enset.digitat.banking.enums.OperationType;
@@ -16,13 +13,14 @@ import ma.enset.digitat.banking.mappers.BankAccountMapperImpl;
 import ma.enset.digitat.banking.repositories.BankAccountRepository;
 import ma.enset.digitat.banking.repositories.CustomerRepository;
 import ma.enset.digitat.banking.repositories.OperationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -164,5 +162,28 @@ public class BankAccountServiceImpl implements BankAccountService {
         }).toList();
         return bankAccountDTOS;
     }
+    @Override
+    public List<OperationDTO> accountHistory(String accountId) throws BankAcountNotFoundException {
+        BankAccount bankAccount = bankAccountRepository.findById(accountId).orElseThrow(() -> new BankAcountNotFoundException("Bank account not found"));
+        List<Operation> operationList = operationRepository.findByBankAccountId(accountId);
+        List<OperationDTO> operationDTOS = operationList.stream().map(operation -> dtoMapper.fromOperation(operation)).toList();
+        return operationDTOS;
+    }
+
+    @Override
+    public AccountHistoryDTO getAccountHistory(String accountID, int page, int size) throws BankAcountNotFoundException {
+        BankAccount bankAccount = bankAccountRepository.findById(accountID).orElseThrow(() -> new BankAcountNotFoundException("Bank account not found"));
+        Page<Operation> accountOperations = operationRepository.findByBankAccountId(accountID, PageRequest.of(page, size));
+        AccountHistoryDTO accountHistoryDTO = new AccountHistoryDTO();
+        List<OperationDTO> operationDTOS = accountOperations.stream().map(op -> dtoMapper.fromOperation(op)).toList();
+        accountHistoryDTO.setOperations(operationDTOS);
+        accountHistoryDTO.setAccountId(bankAccount.getId());
+        accountHistoryDTO.setBalance(bankAccount.getBalance());
+        accountHistoryDTO.setPageSize(size);
+        accountHistoryDTO.setCurrentPage(page);
+        accountHistoryDTO.setTotalPages(accountOperations.getTotalPages());
+        return accountHistoryDTO;
+    }
+
 
 }
