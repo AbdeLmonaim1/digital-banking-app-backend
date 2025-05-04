@@ -1,5 +1,6 @@
 package ma.enset.digitat.banking;
 
+import ma.enset.digitat.banking.dtos.BankAccountDTO;
 import ma.enset.digitat.banking.dtos.CustomerDTO;
 import ma.enset.digitat.banking.entities.*;
 import ma.enset.digitat.banking.enums.AccountStatus;
@@ -128,8 +129,8 @@ public class DigitalBankingAppBackendApplication {
                 try {
                     bankAccountService.saveCurrentBankAccount(Math.random()*12000,9000.00,cust.getId());
                     bankAccountService.saveSavingBankAccount(Math.random()*12000,5.5,cust.getId());
-                    List<BankAccount> bankAccounts = bankAccountService.listBankAccounts();
-                    for (BankAccount bankAccount : bankAccounts) {
+                    List<BankAccountDTO> bankAccounts = bankAccountService.listBankAccounts();
+                    for (BankAccountDTO bankAccount : bankAccounts) {
                         for (int i = 0; i < 10; i++) {
                             bankAccountService.credit(bankAccount.getId(), 10000+Math.random()*12000, "Credit Operation");
                             bankAccountService.debit(bankAccount.getId(), 1000+Math.random()*9000, "Debit Operation");
