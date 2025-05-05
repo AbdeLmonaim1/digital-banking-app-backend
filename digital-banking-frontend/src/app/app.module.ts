@@ -8,14 +8,16 @@ import { CustomersComponent } from './customers/customers.component';
 import { AccountsComponent } from './accounts/accounts.component';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { NewCustomerComponent } from './new-customer/new-customer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     CustomersComponent,
-    AccountsComponent
+    AccountsComponent,
+    NewCustomerComponent
   ],
   imports: [
     BrowserModule,
@@ -23,6 +25,7 @@ import {FormsModule} from '@angular/forms';
     RouterModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
