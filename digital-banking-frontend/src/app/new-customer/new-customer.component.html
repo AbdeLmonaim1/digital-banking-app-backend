@@ -1,0 +1,43 @@
+<div class="container mt-5" style="width: 660px;">
+  <h2 class="text-center mb-4">Add New Customer</h2>
+  <div *ngIf="newCustomerFormGroup">
+    <form [formGroup]="newCustomerFormGroup" (ngSubmit)="handleSaveCustomer()" class="p-4 border rounded shadow-sm bg-light">
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-person icon"></i></span>
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            formControlName="name"
+            placeholder="Enter customer name"
+          />
+          <span class="text-danger"
+                *ngIf="newCustomerFormGroup.get('name')?.touched
+             && newCustomerFormGroup.get('name')?.errors?.['required']"
+          >Name Required</span>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-envelope icon"></i></span>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="Enter customer email"
+          />
+        </div>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary" [disabled]="!newCustomerFormGroup.valid">
+          <i class="bi bi-save"></i> Save Customer
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>

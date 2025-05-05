@@ -1,0 +1,133 @@
+<!-- customer.component.html -->
+<div class="customer-container">
+  <div class="customer-header">
+    <h2>Customer Management</h2>
+    <div class="search-container">
+      <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchCustomers()">
+        <div class="input-group">
+        <span class="input-group-text">
+          <button class="btn btn-outline-info"><i class="bi bi-search"></i></button>
+        </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search customers..."
+            aria-label="Search customers"
+          formControlName="keyword"
+            placeholder="keyword"
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="table-responsive customer-table-container">
+
+
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col" class="text-center">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-container *ngIf="customers | async as customerList; else failureOrLoading">
+        <tr *ngFor="let c of customers | async" class="customer-row">
+          <td><span class="customer-id">{{c.id}}</span></td>
+          <td>{{c.name}}</td>
+          <td>{{c.email}}</td>
+          <td class="text-center">
+            <div class="action-buttons">
+              <button class="btn action-btn edit-btn">
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+              <button (click)="handleDeleteCustomer(c)" class="btn action-btn delete-btn">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+      </ng-container>
+
+      <ng-template #failureOrLoading>
+        <ng-container *ngIf="errorMessage; else loading">
+          <tr>
+            <td colspan="4" class="text-center py-4">
+              <div class="no-data">
+                <i class="bi bi-inbox"></i>
+                <p class="text-danger">No customers found</p>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-template #loading>
+          <tr>
+            <td colspan="4" class="text-center py-4">
+              <div class="loading-container">
+                <i class="bi bi-arrow-repeat spin"></i>
+                <p>Loading customers...</p>
+                <div class="progress" style="height: 10px;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%"></div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+
+      </ng-template>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="showDeleteModal"></div>
+  <div class="modal-dialog" *ngIf="showDeleteModal">
+    <div class="delete-modal">
+      <div class="modal-header">
+        <h5 class="modal-title-delete">Delete Customer</h5>
+        <button type="button" class="btn-close" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete customer <strong>{{selectedCustomer?.name}}</strong>?</p>
+        <p class="text-danger small">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary mx-2" >Cancel</button>
+        <button type="button" class="btn btn-danger" >Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Customer Modal -->
+  <div class="modal-backdrop" *ngIf="showEditModal" ></div>
+  <div class="modal-dialog" *ngIf="showEditModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Customer</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="customerName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="customerName"  name="customerName">
+          </div>
+          <div class="mb-3">
+            <label for="customerEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="customerEmail"  name="customerEmail">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary mx-2">Cancel</button>
+        <button type="button" class="btn btn-primary" >Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
