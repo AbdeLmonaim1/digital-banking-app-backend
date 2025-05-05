@@ -6,7 +6,7 @@ import ma.enset.digitat.banking.entities.*;
 import ma.enset.digitat.banking.enums.AccountStatus;
 import ma.enset.digitat.banking.enums.OperationType;
 import ma.enset.digitat.banking.exceptions.BalanceNotSufficientException;
-import ma.enset.digitat.banking.exceptions.BankAcountNotFoundException;
+import ma.enset.digitat.banking.exceptions.BankAccountNotFoundException;
 import ma.enset.digitat.banking.exceptions.CustomerNotFoundException;
 import ma.enset.digitat.banking.repositories.BankAccountRepository;
 import ma.enset.digitat.banking.repositories.CustomerRepository;
@@ -15,7 +15,6 @@ import ma.enset.digitat.banking.services.BankAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
 import java.util.List;
@@ -138,7 +137,7 @@ public class DigitalBankingAppBackendApplication {
                     }
                 } catch (CustomerNotFoundException e) {
                     e.printStackTrace();
-                } catch (BankAcountNotFoundException | BalanceNotSufficientException e) {
+                } catch (BankAccountNotFoundException | BalanceNotSufficientException e) {
                     throw new RuntimeException(e);
                 }
             });
