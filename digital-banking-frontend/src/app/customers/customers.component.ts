@@ -2,7 +2,7 @@ import {Component, OnInit } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CustomerService} from '../services/customer.service';
 import {Customer} from '../models/customer.model';
-import {async, catchError, Observable, throwError} from 'rxjs';
+import {async, catchError, map, Observable, throwError} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 @Component({
   selector: 'app-customers',
@@ -21,18 +21,16 @@ export class CustomersComponent implements OnInit {
   showEditModal: boolean = false;
 
 
-
-
-
   constructor(private customerService: CustomerService, private fb: FormBuilder) {
 
   }
+
   ngOnInit(): void {
     this.searchFormGroup = this.fb.group({
       keyword: this.fb.control('')
     });
-   this.handleSearchCustomers()
-    }
+    this.handleSearchCustomers()
+  }
 
 
   protected readonly async = async;
@@ -48,14 +46,22 @@ export class CustomersComponent implements OnInit {
   }
 
   handleDeleteCustomer(c: Customer) {
-      this.customerService.deleteCustomer(c.id).subscribe({
-        next: (data) => {
-          this.handleSearchCustomers();
-          this.showDeleteModal = false;
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      })
+    let conf = confirm("Are you sure?");
+    if (!conf) return;
+    this.customerService.deleteCustomer(c.id).subscribe({
+      next: (resp) => {
+        // @ts-ignore
+        this.customers = this.customers.pipe(
+          map(data => {
+            let index = data.indexOf(c);
+            data.slice(index, 1)
+            return data;
+          })
+        );
+      },
+      error: err => {
+        console.log(err);
+      }
+    })
   }
 }
