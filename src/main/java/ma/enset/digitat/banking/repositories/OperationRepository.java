@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface OperationRepository extends JpaRepository<Operation, Long> {
     List<Operation> findByBankAccountId(String accountId);
-    Page<Operation> findByBankAccountId(String accountId, Pageable pageable);
+    Page<Operation> findByBankAccountIdOrderByOperationDateDesc(String accountId, Pageable pageable);
 
 }

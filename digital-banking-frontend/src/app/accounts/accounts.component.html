@@ -1,1 +1,153 @@
-<p>accounts works!</p>
+<!-- customer.component.html -->
+<div class="customer-container">
+ <div class="col col-md-6">
+   <h2>Accounts Management</h2>
+   <div class="search-container">
+       <form [formGroup]="accountsFormGroup" (ngSubmit)="handleSearchAccounts()">
+         <div class="input-group">
+        <span class="input-group-text">
+          <button class="btn btn-outline-info"><i class="bi bi-search"></i></button>
+        </span>
+           <input
+             type="text"
+             class="form-control"
+             placeholder="Search accounts..."
+             aria-label="Search customers"
+             formControlName="accountID"
+           >
+         </div>
+       </form>
+     <ng-template #errorTemplate>
+        <ng-container *ngIf="errorMessage; else loading">
+          <div class="alert alert-danger mt-2" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{errorMessage}}
+          </div>
+        </ng-container>
+       <ng-template #loading>
+             <div class="loading-container">
+               <i class="bi bi-arrow-repeat spin"></i>
+               <p>Loading Account's Details...</p>
+               <div class="progress" style="height: 10px;">
+                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%"></div>
+               </div>
+             </div>
+       </ng-template>
+      </ng-template>
+     <ng-container *ngIf="accountObservable | async as accounts; else errorTemplate;">
+       <div>
+         <label>Account ID : </label>
+         <label><strong>{{accounts.accountId}}</strong></label>
+       </div>
+       <div>
+         <label>Balance : </label>
+         <label><strong> {{accounts.balance | number: '1.2-2'}}</strong></label>
+       </div>
+       <h5 class="mt-2">Account's Operation</h5>
+       <table class="table table-hover">
+         <thead>
+         <tr>
+           <th scope="col">ID</th>
+           <th scope="col">Date</th>
+           <th scope="col">Amount</th>
+           <th scope="col">Type</th>
+           <th scope="col" class="text-center">Actions</th>
+         </tr>
+         </thead>
+         <tbody>
+         <ng-container>
+           <tr class="customer-row" *ngFor="let oper of accounts.operations">
+             <td><span class="customer-id">{{oper.id}}</span></td>
+             <td>{{oper.operationDate | date: 'dd-MM-yyyy:HH-mm-ss'}}</td>
+             <td>{{oper.amount | number: '1.2-2'}}</td>
+             <td>{{oper.type}}</td>
+             <td class="text-center">
+               <div class="action-buttons">
+                 <button class="btn action-btn edit-btn">
+                   <i class="bi bi-pencil-fill"></i>
+                 </button>
+                 <button class="btn action-btn delete-btn">
+                   <i class="bi bi-trash-fill"></i>
+                 </button>
+               </div>
+             </td>
+           </tr>
+
+         </ng-container>
+
+         <ng-template #failureOrLoading>
+           <ng-container>
+             <tr>
+               <td colspan="4" class="text-center py-4">
+                 <div class="no-data">
+                   <i class="bi bi-inbox"></i>
+                   <p class="text-danger">No accounts found</p>
+                 </div>
+               </td>
+             </tr>
+           </ng-container>
+           <ng-template #loading>
+             <tr>
+               <td colspan="4" class="text-center py-4">
+                 <div class="loading-container">
+                   <i class="bi bi-arrow-repeat spin"></i>
+                   <p>Loading customers...</p>
+                   <div class="progress" style="height: 10px;">
+                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%"></div>
+                   </div>
+                 </div>
+               </td>
+             </tr>
+           </ng-template>
+
+
+         </ng-template>
+
+         </tbody>
+       </table>
+       <ul class="nav nav-pills">
+         <li *ngFor="let item of [].constructor(accounts.totalPages); let page=index;">
+           <div [ngClass]="page==currentPage? 'btn-info text-white': 'btn-outline-info'" (click)="goToPage(page)" class="btn ms-1 mt-1">{{page+1}}</div>
+         </li>
+       </ul>
+     </ng-container>
+   </div>
+ </div>
+ <div class="col col-md-6">
+   <h2 class="mt-1">Account Operations</h2>
+   <div class="card" *ngIf="accountObservable">
+     <div class="card-header">Operations</div>
+     <div class="card-body">
+        <form [formGroup]="operationFormGroup" (ngSubmit)="handleAccountOperation()" method="post">
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">DEBIT:</label>
+            <input class="form-check-input" type="radio" formControlName="operationType" value="DEBIT"/>
+          </div>
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">CREDIT:</label>
+            <input class="form-check-input" type="radio" formControlName="operationType" value="CREDIT"/>
+          </div>
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">TRANSFER:</label>
+            <input class="form-check-input" type="radio" formControlName="operationType" value="TRANSFER"/>
+          </div>
+          <div class="mb-3" *ngIf="operationFormGroup.value?.operationType == 'TRANSFER'">
+            <label class="form-label">ACCCOUNT DESTINATION:</label>
+            <input type="text" formControlName="accountDestination" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">AMOUNT:</label>
+            <input type="text" formControlName="amount" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">DESCRIPTION:</label>
+            <input type="text" formControlName="description" class="form-control" />
+          </div>
+          <div class="d-grid">
+            <button class="btn btn-outline-info"><i class="bi bi-save ms-1"></i> Save Operation </button>
+          </div>
+        </form>
+     </div>
+   </div>
+ </div>
+</div>

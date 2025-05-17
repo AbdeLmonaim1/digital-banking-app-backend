@@ -4,6 +4,7 @@ import {CustomerService} from '../services/customer.service';
 import {Customer} from '../models/customer.model';
 import {async, catchError, map, Observable, throwError} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {Router} from '@angular/router';
 @Component({
   selector: 'app-customers',
   standalone: false,
@@ -21,7 +22,7 @@ export class CustomersComponent implements OnInit {
   showEditModal: boolean = false;
 
 
-  constructor(private customerService: CustomerService, private fb: FormBuilder) {
+  constructor(private customerService: CustomerService, private fb: FormBuilder, private router: Router) {
 
   }
 
@@ -63,5 +64,9 @@ export class CustomersComponent implements OnInit {
         console.log(err);
       }
     })
+  }
+
+  handleCustomerAccounts(c: Customer) {
+    this.router.navigateByUrl('customer-accounts/'+c.id, {state: c});
   }
 }

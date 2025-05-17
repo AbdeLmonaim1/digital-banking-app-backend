@@ -121,7 +121,15 @@
   color: white;
   transform: translateY(-2px);
 }
-
+.account-btn {
+  background-color: rgba(96, 230, 66, 0.1);
+  color: #23a119;
+}
+.account-btn:hover {
+  background-color: #23a119;
+  color: white;
+  transform: translateY(-2px);
+}
 .no-data {
   display: flex;
   flex-direction: column;
