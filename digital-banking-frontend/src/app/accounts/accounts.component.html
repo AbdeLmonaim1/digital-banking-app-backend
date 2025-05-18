@@ -113,7 +113,7 @@
      </ng-container>
    </div>
  </div>
- <div class="col col-md-6">
+ <div class="col col-md-6" *ngIf="authService.roles.includes('ADMIN')">
    <h2 class="mt-1">Account Operations</h2>
    <div class="card" *ngIf="accountObservable">
      <div class="card-header">Operations</div>

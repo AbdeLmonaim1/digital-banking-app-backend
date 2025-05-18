@@ -22,12 +22,12 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/customers" #navLinkRefs (click)="setActive(1)">
+          <a class="nav-link" routerLink="/admin/customers" #navLinkRefs (click)="setActive(1)">
             <span>Customers</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/accounts" #navLinkRefs (click)="setActive(2)">
+          <a class="nav-link" routerLink="/admin/accounts" #navLinkRefs (click)="setActive(2)">
             <span>Accounts</span>
           </a>
         </li>
@@ -36,8 +36,8 @@
             <div class="">Customers</div>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="customerDropdown">
-            <li><a class="dropdown-item" routerLink="/customers"><i class="me-2"></i>Search Customers</a></li>
-            <li><a class="dropdown-item" routerLink="/new-customer"><i class="me-2"></i>New Customer</a></li>
+            <li><a class="dropdown-item" routerLink="/admin/customers"><i class="me-2"></i>Search Customers</a></li>
+            <li *ngIf="authService.roles.includes('ADMIN')"><a class="dropdown-item" routerLink="/admin/new-customer"><i class="me-2"></i>New Customer</a></li>
           </ul>
         </li>
 
@@ -66,15 +66,15 @@
 
 
         <!-- User Profile -->
-        <div class="nav-item dropdown">
+        <div class="nav-item dropdown" *ngIf="authService.isAuthenticated===true">
           <button class="btn user-btn" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <div class="avatar">{{username.charAt(0)}}</div>
+            <div class="avatar">{{authService.username.charAt(0)}}</div>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-person me-2"></i>Profile</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-person me-2"></i>Profile-{{authService.username}}</a></li>
             <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-gear me-2"></i>Settings</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            <li><a class="dropdown-item" (click)="handleLogout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
           </ul>
         </div>
       </div>
